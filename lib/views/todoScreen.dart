@@ -22,12 +22,30 @@ class TodoScreen extends StatelessWidget {
               color: Colors.red,
             ),
             onDismissed: (_) {
+              // keep the task
+              var removed = _todoController.todos[index];
               // delete the selected item
               _todoController.todos.removeAt(index);
               // show snackbar
-              Get.snackbar('Task removed', 'success',
-                  snackPosition: SnackPosition.TOP);
+              Get.snackbar(
+                'Task removed',
+                removed.title,
+                snackPosition: SnackPosition.TOP,
+                mainButton: TextButton(
+                  onPressed: () {
+                    // undo by inserting the removed data
+                    _todoController.todos.insert(index, removed);
+                    // hide snackbar immediately
+                    Get.back();
+                  },
+                  child: Text(
+                    'undo',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              );
             },
+
             child: ListTile(
               leading: Checkbox(
                 value: _todoController.todos[index].status,
