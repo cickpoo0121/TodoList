@@ -14,7 +14,6 @@ class TodoUpdateScreen extends StatelessWidget {
     // add or edit?
     if (index != null) {
       _tcTask.text = _todoController.todos[index].title;
-      
     }
 
     return SafeArea(
@@ -48,10 +47,14 @@ class TodoUpdateScreen extends StatelessWidget {
                   ),
                   ElevatedButton(
                       onPressed: () {
-                        _todoController.todos.add(Todo(title: _tcTask.text));
+                        if (index == null) {
+                          _todoController.todos.add(Todo(title: _tcTask.text));
+                        } else {
+                          _todoController.updateTitle(index, _tcTask.text);
+                        }
                         Get.back();
                       },
-                      child: Text('Add')),
+                      child: index == null ? Text('Add') : Text('Edit')),
                 ],
               )
             ],

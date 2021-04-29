@@ -4,6 +4,7 @@ import 'package:state/controllers/todoController.dart';
 import 'package:state/views/todoUpdateScreen.dart';
 
 class TodoScreen extends StatelessWidget {
+  // save object to memory by Get.put and Get.find to call || for using in every page
   TodoController _todoController = Get.put(TodoController());
 
   @override
@@ -14,25 +15,40 @@ class TodoScreen extends StatelessWidget {
       ),
       body: Obx(
         () => ListView.separated(
-          itemBuilder: (BuildContext context, int index) => ListTile(
-            leading: Checkbox(
-              value: _todoController.todos[index].status,
-              onChanged: (bool status) {
-                _todoController.updateStatus(index, status);
-              },
+          itemBuilder: (BuildContext context, int index) => Dismissible(
+            // Dismissible widget requires unique key || Key(index.toString())
+            key: UniqueKey(),
+            background: Container(
+              color: Colors.red,
             ),
-            title: Text(
-              '${_todoController.todos[index].title}',
-              style: _todoController.todos[index].status
-                  ? TextStyle(
-                      color: Colors.red, decoration: TextDecoration.lineThrough)
-                  : TextStyle(color: Colors.black),
-            ),
-            trailing: IconButton(
-              icon: Icon(Icons.edit),
-              onPressed: () {
-                Get.to(TodoUpdateScreen(), arguments: index);
-              },
+            onDismissed: (_) {
+              // delete the selected item
+              _todoController.todos.removeAt(index);
+              // show snackbar
+              Get.snackbar('Task removed', 'success',
+                  snackPosition: SnackPosition.TOP);
+            },
+            child: ListTile(
+              leading: Checkbox(
+                value: _todoController.todos[index].status,
+                onChanged: (bool status) {
+                  _todoController.updateStatus(index, status);
+                },
+              ),
+              title: Text(
+                '${_todoController.todos[index].title}',
+                style: _todoController.todos[index].status
+                    ? TextStyle(
+                        color: Colors.red,
+                        decoration: TextDecoration.lineThrough)
+                    : TextStyle(color: Colors.black),
+              ),
+              trailing: IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () {
+                  Get.to(() => TodoUpdateScreen(), arguments: index);
+                },
+              ),
             ),
           ),
           separatorBuilder: (BuildContext context, int index) => Divider(),
