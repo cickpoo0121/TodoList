@@ -16,9 +16,60 @@ class TodoController extends GetxController {
     print('Controller is created');
 
     // ======== Load data ===========
+    // 1. Load data from local storage
+    // List<Map<String,dynamic>>
+    List todosSave = GetStorage().read('todos');
+
+    if (todosSave != null) {
+      print('==================>> Data loaded');
+      // print(todosSave);
+      // Our loaded datat is a List of Map
+      //  [{title: task1, status: false}]
+      // 2.Convert List of Map to List of todo Object
+
+      // ---------------- Method 1 -------------------
+      /*List<Todo> todoTemp = [];
+      for (int i = 0; i < todosSave.length; i++) {
+        // Map<String, dynamic> task = todosSave[i];
+        todoTemp.add(Todo(title: todosSave[i]['title'], status: todosSave[i]['status']));
+      }
+      // print(todoTemp);
+      // 3. Convert List of Todo object to obs
+      todos = todoTemp.obs;
+      */
+
+      // ---------------- Method 2 -------------------
+      // Iterable x = todosSave.map((task) {
+      //   // convert Map to Todo
+      //   return Todo(title: task['title'], status: task['status']);
+      // });
+
+      // Iterable x = todosSave.map((task) => Todo(title: task['title'], status: task['status']));
+      // List<Todo> todoTemp = x.toList();
+
+      // List<Todo> todoTemp = todosSave
+      //     .map((task) => Todo(title: task['title'], status: task['status']))
+      //     .toList();
+
+      // todos = todoTemp.obs;
+
+      // todos = todosSave
+      //     .map((task) => Todo(title: task['title'], status: task['status']))
+      //     .toList()
+      //     .obs;
+
+      // ---------------- Method 3 -------------------
+      // todos = todosSave
+      //     .map((task) => Todo().fromJson(task))
+      //     .toList()
+      //     .obs;
+
+      todos = todosSave.map((task) => Todo.fromJson(task)).toList().obs;
+    }
 
     // ======== Create worker to listen to todos changes ===========
     ever(todos, (_) {
+      print('==================>> Save data');
       // ======== Save data ===========
       /*
       // ------------------ Method 1 -----------------------------
